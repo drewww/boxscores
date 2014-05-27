@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import com.dota2.proto.Demo.CDemoFileInfo;
+import com.dota2.proto.DotaUsermessages.CDOTAUserMsg_ChatEvent;
 import com.dota2.proto.Netmessages.CNETMsg_Tick;
 
 import skadistats.clarity.Clarity;
@@ -65,9 +66,25 @@ public class Main {
 				if (p.getMessage() instanceof CNETMsg_Tick) {
 					// once per tick, check the chat message list.
 					ChatEventCollection cec = match.getChatEvents();
-
-					for(Object e : cec) {
-						System.out.println(e);
+					
+					for(CDOTAUserMsg_ChatEvent e : cec) {
+						// we're looking for four things here:
+						// CHAT_MESSAGE_HERO_KILL
+						// CHAT_MESSAGE_TOWER_KILL
+						// CHAT_MESSAGE_TOWER_DENY
+						// CHAT_MESSAGE_BARRACKS_KILL
+						
+						// if we see any of those, log them with the timestamp
+						// so it's available for the viz later.
+						if(e.getType().toString().equals("CHAT_MESSAGE_HERO_KILL")) {
+							System.out.println("HERO KILL");
+						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_KILL")) {
+							System.out.println("TOWER KILL");
+						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_DENY")) {
+							System.out.println("TOWER DENY");
+						} else if(e.getType().toString().equals("CHAT_MESSAGE_BARRACKS_KILL")) {
+							System.out.println("BARRACKS KILL");
+						}
 					}
 
 					// check and see if we're at least a second beyond the last time we grabbed data.
