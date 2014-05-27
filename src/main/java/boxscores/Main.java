@@ -41,8 +41,6 @@ public class Main {
 
 			while (iter.hasNext()) {
 				Peek p = iter.next();
-				p.apply(match);
-
 					//
 					//		            GameEventCollection ec = match.getGameEvents();
 					//		            for(GameEvent e : ec) {
@@ -101,6 +99,11 @@ public class Main {
 						System.out.println("R " + snapshotRadiantGold + " - " + snapshotDireGold + " D");
 					}
 				}
+
+				// AFTER we've done the analysis, apply the message.
+				// if we do this before, we won't see all the messages or events or whatever from 
+				// the most recent tick.
+				p.apply(match);
 			}
 
 
