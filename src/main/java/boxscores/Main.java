@@ -122,6 +122,16 @@ public class Main {
 							kill.value = e.getValue();
 							t.addEvent(kill);							
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_KILL")) {
+							GameEvent tower = new GameEvent(Type.TOWER_KILL); 
+							
+							if(e.getValue()==2) {
+								tower.team = Team.RADIANT;
+							} else {
+								tower.team = Team.DIRE;
+							}
+							
+							t.addEvent(tower);
+							
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_DENY")) {
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_BARRACKS_KILL")) {
 						}
