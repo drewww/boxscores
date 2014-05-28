@@ -304,20 +304,27 @@ public class Main {
 				if(t.hasEventType(GameEvent.Type.BARRACK_KILL)) {
 					
 				}
-			}
+			}			
 			
-			
-			
-			
-			System.out.println(goldTicks);
-			System.out.println(direTicks);
-			System.out.println(radiantTicks);
-			
+//			System.out.println(goldTicks);
+//			System.out.println(direTicks);
+//			System.out.println(radiantTicks);
+			printTickList(goldTicks);
+			printTickList(direTicks);
+			printTickList(radiantTicks);
+						
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 
+	}
+	
+	public static void printTickList(ArrayList<Tick> list) {
+		for(Tick t : list){
+			System.out.println(t.toString());
+			System.out.println();
+		}
 	}
 }

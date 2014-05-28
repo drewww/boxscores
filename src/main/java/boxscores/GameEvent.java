@@ -23,6 +23,6 @@ public class GameEvent {
 	}
 
 	public String toString() {
-		return this.team + "." + this.type + " : " + this.value;
+		return this.team + "." + this.type + "," + this.value;
 	}
 }

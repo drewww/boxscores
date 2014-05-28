@@ -19,7 +19,13 @@ public class Tick {
 	}
 	
 	public String toString() {
-		return time + ": " + "[" + this.events.toString() + "]\n";
+		String out = time + ",";
+		
+		for(GameEvent e : this.events) {
+			out += e.toString() + ",";
+		}
+
+		return out;
 	}
 	
 	public boolean hasEventType(Type t) {
