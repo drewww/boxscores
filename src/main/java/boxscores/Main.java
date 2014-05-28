@@ -131,9 +131,47 @@ public class Main {
 							}
 							
 							t.addEvent(tower);
-							
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_DENY")) {
+							GameEvent tower = new GameEvent(Type.TOWER_DENY); 
+							
+							// these are flipped relative to kill, since I think the value
+							// specifies the denying team not the team that owns the
+							// tower that was denied? Need to check this; don't have a
+							// replay on hand where it's totally obvious.
+							if(e.getValue()==2) {
+								tower.team = Team.DIRE;
+							} else {
+								tower.team = Team.RADIANT;
+							}
+							
+							t.addEvent(tower);
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_BARRACKS_KILL")) {
+							GameEvent rax = new GameEvent(Type.BARRACK_KILL);
+							
+							// we're going to do this very roughty.
+							// the value field here is a bitmask. As far as I can tell,
+							// lower VALUES (interpreting it as an int) are 
+							// the radiant barracks, and higher values are
+							// the dire barracks. We don't care precisely which
+							// rax goes down, just which team. I'm not 100% sure
+							// about the ordering. I'm guessing for now based on
+							// some spotty data about games where I don't actually
+							// know what happened in them that the cutoff is
+							// 128. 128 and up is radiant, under is dire.
+							// This may be wrong but it'll show up later if so.
+							
+							// remember that we credit the rax to the team that
+							// knocked it down, so even though >64 is a radiant
+							// rax, it's a dire victory.
+							if(e.getValue()>64) {
+								rax.team = Team.DIRE;
+							} else {
+								rax.team = Team.RADIANT;
+							}
+							
+							rax.value = e.getValue();
+							
+							t.addEvent(rax);
 						}
 					}
 
