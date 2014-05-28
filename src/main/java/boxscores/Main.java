@@ -2,6 +2,7 @@ package boxscores;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import boxscores.GameEvent.Type;
 
@@ -217,8 +218,41 @@ public class Main {
 			}
 
 			// when we're done, dump the data
-			System.out.println(ticks);
+			
+			// okay, new regime for outputting the results.
+			// we don't want every tick - that's overwhelming. Instead, we want:
+			// 		gold, once a second
+			//		any tick in which there is a non-gold event.
+			// 
+			// looking forward to how we will want to use this data.
+			// we want to separate into three streams:
+			//	1. gold diff
+			// 	2. dire events
+			//	3. radiant events
+			// and have them be lists of tuples with timestamp / value
+			// we can reuse the tick for this and just adjust the toString values so
+			// we can use the exported information to mockup a viz.
 
+			ArrayList<Tick> goldTicks = new ArrayList<Tick>();
+			ArrayList<Tick> direTicks = new ArrayList<Tick>();
+			ArrayList<Tick> radiantTicks = new ArrayList<Tick>();
+
+			float lastGoldTick = 0;
+			for(Tick t : ticks) {
+				if(t.time > (lastGoldTick + 5) && t.hasGoldData()) {
+					lastGoldTick = t.time;
+					Tick newGoldTick = new Tick(t.time);
+					List<GameEvent> goldEvents = t.getGoldData();
+					
+					GameEvent e = new GameEvent(GameEvent.Type.GOLD_DIFF);
+					e.value = goldEvents.get(0).value - goldEvents.get(1).value;
+					newGoldTick.addEvent(e);
+					goldTicks.add(newGoldTick);
+				}
+			}
+			
+			System.out.println(goldTicks);
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
