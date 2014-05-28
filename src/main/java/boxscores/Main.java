@@ -3,15 +3,15 @@ package boxscores;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import boxscores.GameEvent.Type;
+
 import com.dota2.proto.Demo.CDemoFileInfo;
 import com.dota2.proto.DotaUsermessages.CDOTAUserMsg_ChatEvent;
 import com.dota2.proto.Netmessages.CNETMsg_Tick;
 
 import skadistats.clarity.Clarity;
 import skadistats.clarity.match.ChatEventCollection;
-import skadistats.clarity.match.GameEventCollection;
 import skadistats.clarity.match.Match;
-import skadistats.clarity.model.GameEvent;
 import skadistats.clarity.parser.DemoInputStreamIterator;
 import skadistats.clarity.parser.Peek;
 import skadistats.clarity.parser.Profile;
@@ -55,9 +55,8 @@ public class Main {
 			//		a value
 			//		and a team
 			// annoyingly, I think I need to make an object for this.
-			
-			ArrayList<Integer> radiantGold = new ArrayList<Integer>();
-			ArrayList<Integer> direGold = new ArrayList<Integer>();
+
+			ArrayList<Tick> ticks = new ArrayList<Tick>();
 
 			while (iter.hasNext()) {
 				Peek p = iter.next();
@@ -93,58 +92,62 @@ public class Main {
 				// tick to end and just look once for actions we care about
 				// that took place during the tick.
 				if (p.getMessage() instanceof CNETMsg_Tick) {
+
+					Tick t = new Tick(match.getReplayTime());
 					// once per tick, check the chat message list.
 					ChatEventCollection cec = match.getChatEvents();
-					
+
 					for(CDOTAUserMsg_ChatEvent e : cec) {
 						// we're looking for four things here:
 						// CHAT_MESSAGE_HERO_KILL
 						// CHAT_MESSAGE_TOWER_KILL
 						// CHAT_MESSAGE_TOWER_DENY
 						// CHAT_MESSAGE_BARRACKS_KILL
-						
+
 						// if we see any of those, log them with the timestamp
 						// so it's available for the viz later.
 						if(e.getType().toString().equals("CHAT_MESSAGE_HERO_KILL")) {
-							System.out.println("HERO KILL");
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_KILL")) {
-							System.out.println("TOWER KILL");
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_DENY")) {
-							System.out.println("TOWER DENY");
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_BARRACKS_KILL")) {
-							System.out.println("BARRACKS KILL");
 						}
 					}
 
-					// check and see if we're at least a second beyond the last time we grabbed data.
-					// we could do this every tick, but that's still more often than we really 
-					// need to be checking. Even once a second is probably overkill.
-					if(Math.floor(match.getGameTime()) > lastGameTime) {	
-						lastGameTime = (int) Math.floor(match.getGameTime());
-						// if yes, sum up all the gold of all the players on radiant and dire.
-						int snapshotRadiantGold = 0;
-						int snapshotDireGold = 0;
+					//  sum up all the gold of all the players on radiant and dire.
+					int snapshotRadiantGold = 0;
+					int snapshotDireGold = 0;
 
+					if(match.getPlayerResource()!=null) {
 						for(int i=0; i<10; i++) {
 							// property name missing the last two digits, which we'll
 							// add on manually.
 							String property = "EndScoreAndSpectatorStats.m_iTotalEarnedGold.00";
-
+	
 							// now 
 							property = property + String.format("%02d", i);
-
+	
 							int gold = match.getPlayerResource().getProperty(property);
-
+	
 							if(i >= 5) {
 								snapshotDireGold += gold;
 							} else {
 								snapshotRadiantGold += gold;
 							}	            			
 						}
-
-						System.out.println("R " + snapshotRadiantGold + " - " + snapshotDireGold + " D");
+	
+						GameEvent radiantGold = new GameEvent(Type.TOTAL_GOLD, Team.RADIANT);
+						radiantGold.value = snapshotRadiantGold; 
+	
+						GameEvent direGold = new GameEvent(Type.TOTAL_GOLD, Team.DIRE);
+						direGold.value = snapshotDireGold; 
+	
+						t.addEvent(radiantGold);
+						t.addEvent(direGold);
 					}
+					
+					ticks.add(t);
 				}
+
 
 				// AFTER we've done the analysis, apply the message.
 				// if we do this before, we won't see all the messages or events or whatever from 
@@ -152,6 +155,8 @@ public class Main {
 				p.apply(match);
 			}
 
+			// when we're done, dump the data
+			System.out.println(ticks);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

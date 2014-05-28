@@ -14,5 +14,9 @@ public class Tick {
 	
 	public void addEvent(GameEvent e) {
 		this.events.add(e);
-	}	
+	}
+	
+	public String toString() {
+		return time + ": " + "[" + this.events.toString() + "]\n";
+	}
 }
