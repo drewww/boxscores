@@ -239,19 +239,53 @@ public class Main {
 
 			float lastGoldTick = 0;
 			for(Tick t : ticks) {
-				if(t.time > (lastGoldTick + 5) && t.hasGoldData()) {
+				if(t.time > (lastGoldTick + 5) && t.hasEventType(GameEvent.Type.TOTAL_GOLD)) {
 					lastGoldTick = t.time;
 					Tick newGoldTick = new Tick(t.time);
-					List<GameEvent> goldEvents = t.getGoldData();
+					List<GameEvent> goldEvents = t.getEventType(GameEvent.Type.TOTAL_GOLD);
 					
 					GameEvent e = new GameEvent(GameEvent.Type.GOLD_DIFF);
 					e.value = goldEvents.get(0).value - goldEvents.get(1).value;
 					newGoldTick.addEvent(e);
 					goldTicks.add(newGoldTick);
 				}
+				
+				if(t.hasEventType(GameEvent.Type.HERO_KILL)) {
+					List<GameEvent> heroKills = t.getEventType(GameEvent.Type.HERO_KILL);
+					
+					// for each hero kill, figure out which team it's for and put it in the right
+					// event list.
+					for(GameEvent heroKill : heroKills) {
+						Tick newKillTick = new Tick(t.time);
+						newKillTick.addEvent(heroKill);
+						
+						if(heroKill.team==Team.DIRE) {
+							direTicks.add(newKillTick);
+						} else {
+							radiantTicks.add(newKillTick);
+						}
+					}
+				}
+				
+				if(t.hasEventType(GameEvent.Type.TOWER_KILL)) {
+					
+				}
+				
+				if(t.hasEventType(GameEvent.Type.TOWER_DENY)) {
+					
+				}
+				
+				if(t.hasEventType(GameEvent.Type.BARRACK_KILL)) {
+					
+				}
 			}
 			
+			
+			
+			
 			System.out.println(goldTicks);
+			System.out.println(direTicks);
+			System.out.println(radiantTicks);
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

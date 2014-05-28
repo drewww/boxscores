@@ -3,6 +3,8 @@ package boxscores;
 import java.util.ArrayList;
 import java.util.List;
 
+import boxscores.GameEvent.Type;
+
 public class Tick {
 	public Float time;
 	public List<GameEvent> events;
@@ -20,23 +22,28 @@ public class Tick {
 		return time + ": " + "[" + this.events.toString() + "]\n";
 	}
 	
-	public boolean hasGoldData() {
-		if(this.events.size() > 0 && this.events.get(0).type==GameEvent.Type.TOTAL_GOLD) {
-			return true;
+	public boolean hasEventType(Type t) {
+		if(this.events.size() > 0) {
+			for(GameEvent e : this.events) {
+				if(e.type==t) {
+					return true;
+				}
+			}
+			return false;
 		} else {
 			return false;
 		}
 	}
 	
-	public List<GameEvent> getGoldData() {
-		List<GameEvent> goldEvents = new ArrayList<GameEvent>();
+	public List<GameEvent> getEventType(Type t) {
+		List<GameEvent> selectedEvents = new ArrayList<GameEvent>();
 		
 		for(GameEvent e : this.events) {
-			if(e.type==GameEvent.Type.TOTAL_GOLD) {
-				goldEvents.add(e);
+			if(e.type==t) {
+				selectedEvents.add(e);
 			}
 		}
 		
-		return goldEvents;
+		return selectedEvents;
 	}
 }
