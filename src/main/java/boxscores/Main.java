@@ -268,11 +268,37 @@ public class Main {
 				}
 				
 				if(t.hasEventType(GameEvent.Type.TOWER_KILL)) {
+					List<GameEvent> towerKills = t.getEventType(GameEvent.Type.TOWER_KILL);
 					
+					// for each hero kill, figure out which team it's for and put it in the right
+					// event list.
+					for(GameEvent towerKill : towerKills) {
+						Tick towerKillTick = new Tick(t.time);
+						towerKillTick.addEvent(towerKill);
+						
+						if(towerKill.team==Team.DIRE) {
+							direTicks.add(towerKillTick);
+						} else {
+							radiantTicks.add(towerKillTick);
+						}
+					}
 				}
 				
 				if(t.hasEventType(GameEvent.Type.TOWER_DENY)) {
+					List<GameEvent> towerKills = t.getEventType(GameEvent.Type.TOWER_DENY);
 					
+					// for each hero kill, figure out which team it's for and put it in the right
+					// event list.
+					for(GameEvent towerKill : towerKills) {
+						Tick towerKillTick = new Tick(t.time);
+						towerKillTick.addEvent(towerKill);
+						
+						if(towerKill.team==Team.DIRE) {
+							direTicks.add(towerKillTick);
+						} else {
+							radiantTicks.add(towerKillTick);
+						}
+					}
 				}
 				
 				if(t.hasEventType(GameEvent.Type.BARRACK_KILL)) {
