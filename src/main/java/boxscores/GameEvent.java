@@ -1,5 +1,7 @@
 package boxscores;
 
+import boxscores.GameEvent.Type;
+
 public class GameEvent {
 	// being very lazy with all the public fields but whatever.
 	public enum Type {TOTAL_GOLD, HERO_KILL, TOWER_KILL, TOWER_DENY, BARRACK_KILL};
@@ -16,6 +18,10 @@ public class GameEvent {
 		this.team = team;
 	}
 	
+	public GameEvent(Type type) {
+		this.type = type;
+	}
+
 	public String toString() {
 		return this.team + "." + this.type + " : " + this.value;
 	}

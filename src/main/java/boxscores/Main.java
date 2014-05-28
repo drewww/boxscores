@@ -107,6 +107,20 @@ public class Main {
 						// if we see any of those, log them with the timestamp
 						// so it's available for the viz later.
 						if(e.getType().toString().equals("CHAT_MESSAGE_HERO_KILL")) {
+							// we categorize the kill based on the playerid_1 field
+							// that field represents the entity that died. If radiant
+							// heroes are 0-4 and dire are 5-9, interpret the team
+							// that way.
+							GameEvent kill = new GameEvent(Type.HERO_KILL);
+							
+							if(e.getPlayerid1()<5) {
+								kill.team = Team.DIRE;
+							} else {
+								kill.team = Team.RADIANT;
+							}
+							
+							kill.value = e.getValue();
+							t.addEvent(kill);							
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_KILL")) {
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_TOWER_DENY")) {
 						} else if(e.getType().toString().equals("CHAT_MESSAGE_BARRACKS_KILL")) {
@@ -147,7 +161,6 @@ public class Main {
 					
 					ticks.add(t);
 				}
-
 
 				// AFTER we've done the analysis, apply the message.
 				// if we do this before, we won't see all the messages or events or whatever from 
