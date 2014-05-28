@@ -37,22 +37,51 @@ public class Main {
 
 			int lastGameTime = 0;
 
+			// we need to have a comprehensive data structure here.
+			// for every tick, add an entry in the metadata list that contains
+			// a dictionary of fields. It will be an array, with each
+			// element a HashTable from string to ... ugh java is the 
+			// worst. For each time stamp it needs to have:
+			//  0. timestamp
+			//	1. radiant_total_gold -> integer
+			//	2. dire_total_gold -> integer
+			//  3. some number of events
+			//		events are associated with a team.
+			//		we're going to attribute events positively;
+			//		kills by dire go to dire
+			//		tower kills by dire go to dire
+			//		barrack kills by dire to go dire
+			// 		so each event has a type (eg 'tower_kill', 'tower_deny', 'hero_kill', etc)
+			//		a value
+			//		and a team
+			// annoyingly, I think I need to make an object for this.
+			
 			ArrayList<Integer> radiantGold = new ArrayList<Integer>();
 			ArrayList<Integer> direGold = new ArrayList<Integer>();
 
 			while (iter.hasNext()) {
 				Peek p = iter.next();
-					//
-					//		            GameEventCollection ec = match.getGameEvents();
-					//		            for(GameEvent e : ec) {
-					//	            		if(e.getName().equals("dota_combatlog")) {
-					//	            			if(((Integer)e.getProperty("type"))==4) {
-					//	            				if(((Integer)e.getProperty("targetname")<10)) {
-					////	            					System.out.println(e);
-					//	            				}
-					//	            			}
-					//	            		}
-					//		            }
+
+				// old placeholder code for reading actual combatlog data.
+				// ideally, we won't need to do this to get the information we need,
+				// since it's pretty messy.
+				//
+				// but just for the sake of not forgetting what I know about this...
+				// type==4 checks for death notices (iirc, type 1 is damage, type 2 and 3
+				// related to auras being added/removed) 
+				// and looking at targetname < 10 is assuming (potentially wrongly) that
+				// entities 0-9 are the playerids, and we're just interested in when
+				// they die. 
+				//		            GameEventCollection ec = match.getGameEvents();
+				//		            for(GameEvent e : ec) {
+				//	            		if(e.getName().equals("dota_combatlog")) {
+				//	            			if(((Integer)e.getProperty("type"))==4) {
+				//	            				if(((Integer)e.getProperty("targetname")<10)) {
+				////	            					System.out.println(e);
+				//	            				}
+				//	            			}
+				//	            		}
+				//		            }
 
 				// CNETMsg_Tick messages trigger once per simulation tick.
 				// the Match object accumulates activities within that tick,
